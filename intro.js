@@ -868,7 +868,7 @@
         if (oldHelperNumberLayer) oldHelperNumberLayer.style.opacity = 1;
 
         //reset button focus
-        if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null && nextTooltipButton.tabIndex === -1) {
+        if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null && skipTooltipButton.tabIndex === -1) {
           //tabindex of -1 means we are at the end of the tour - focus on skip / done
           skipTooltipButton.focus();
         } else if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
