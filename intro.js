@@ -485,11 +485,12 @@
       helperNumberLayer.style.left = null;
     }
 
+    var currentIntroItem = this._introItems[this._currentStep];
     //prevent error when `this._currentStep` is undefined
-    if (!this._introItems[this._currentStep]) return;
+    if (!currentIntroItem) return;
 
     //if we have a custom css class for each step
-    currentStepObj = this._introItems[this._currentStep];
+    currentStepObj = currentIntroItem;
     if (typeof (currentStepObj.tooltipClass) === 'string') {
       tooltipCssClass = currentStepObj.tooltipClass;
     } else {
@@ -498,7 +499,7 @@
 
     tooltipLayer.className = ('introjs-tooltip ' + tooltipCssClass).replace(/^\s+|\s+$/g, '');
 
-    currentTooltipPosition = this._introItems[this._currentStep].position;
+    currentTooltipPosition = currentIntroItem.position;
     if ((currentTooltipPosition == "auto" || this._options.tooltipPosition == "auto")) {
       if (currentTooltipPosition != "floating") { // Floating is always valid, no point in calculating
         currentTooltipPosition = _determineAutoPosition.call(this, targetElement, tooltipLayer, currentTooltipPosition);
@@ -867,10 +868,10 @@
         if (oldHelperNumberLayer) oldHelperNumberLayer.style.opacity = 1;
 
         //reset button focus
-        if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null && skipTooltipButton.tabIndex === -1) {
+        if (skipTooltipButton != null && skipTooltipButton.tabIndex === -1) {
           //tabindex of -1 means we are at the end of the tour - focus on skip / done
           skipTooltipButton.focus();
-        } else if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+        } else if (nextTooltipButton != null) {
           //still in the tour, focus on next
           nextTooltipButton.focus();
         }
@@ -1022,86 +1023,80 @@
       _disableInteraction.call(self);
     }
 
-    if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+    if (nextTooltipButton != null) {
       nextTooltipButton.removeAttribute('tabIndex');
     }
-    if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+    if (prevTooltipButton != null) {
       prevTooltipButton.removeAttribute('tabIndex');
     }
 
     // when it's the first step of tour
     if (this._currentStep == 0 && this._introItems.length > 1) {
-      if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null) {
-        skipTooltipButton.className = 'introjs-button introjs-skipbutton';
-      }
-      if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+      skipTooltipButton.className = 'introjs-button introjs-skipbutton';
+      skipTooltipButton.innerHTML = this._options.skipLabel;
+
+      if (nextTooltipButton != null) {
         nextTooltipButton.className = 'introjs-button introjs-nextbutton';
       }
 
       if (this._options.hidePrev == true) {
-        if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+        if (prevTooltipButton != null) {
           prevTooltipButton.className = 'introjs-button introjs-prevbutton introjs-hidden';
         }
-        if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+        if (nextTooltipButton != null) {
           nextTooltipButton.className += ' introjs-fullbutton';
         }
       } else {
-        if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+        if (prevTooltipButton != null) {
           prevTooltipButton.className = 'introjs-button introjs-prevbutton introjs-disabled';
         }
       }
 
-      if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+      if (prevTooltipButton != null) {
         prevTooltipButton.tabIndex = '-1';
-      }
-      if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null) {
-        skipTooltipButton.innerHTML = this._options.skipLabel;
       }
     } else if (this._introItems.length - 1 == this._currentStep || this._introItems.length == 1) {
       // last step of tour
-      if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null) {
-        skipTooltipButton.innerHTML = this._options.doneLabel;
-        // adding donebutton class in addition to skipbutton
-        skipTooltipButton.className = 'introjs-button introjs-prevbutton';
-      }
-      if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+      skipTooltipButton.innerHTML = this._options.doneLabel;
+      // adding donebutton class in addition to skipbutton
+      skipTooltipButton.className += ' introjs-donebutton';
+
+      if (prevTooltipButton != null) {
         prevTooltipButton.className = 'introjs-button introjs-prevbutton';
       }
 
       if (this._options.hideNext == true) {
-        if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+        if (nextTooltipButton != null) {
           nextTooltipButton.className = 'introjs-button introjs-nextbutton introjs-hidden';
         }
-        if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+        if (prevTooltipButton != null) {
           prevTooltipButton.className += ' introjs-fullbutton';
         }
       } else {
-        if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+        if (nextTooltipButton != null) {
           nextTooltipButton.className = 'introjs-button introjs-nextbutton introjs-disabled';
         }
       }
 
-      if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+      if (nextTooltipButton != null) {
         nextTooltipButton.tabIndex = '-1';
       }
     } else {
       // steps between start and end
-      if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null) {
-        skipTooltipButton.className = 'introjs-button introjs-skipbutton';
-      }
-      if (typeof prevTooltipButton !== "undefined" && prevTooltipButton != null) {
+      if (prevTooltipButton != null) {
         prevTooltipButton.className = 'introjs-button introjs-prevbutton';
       }
-      if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+      if (nextTooltipButton != null) {
         nextTooltipButton.className = 'introjs-button introjs-nextbutton';
       }
-      if (typeof skipTooltipButton !== "undefined" && skipTooltipButton != null) {
+      if (skipTooltipButton != null) {
+        skipTooltipButton.className = 'introjs-button introjs-skipbutton';
         skipTooltipButton.innerHTML = this._options.skipLabel;
       }
     }
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
-    if (typeof nextTooltipButton !== "undefined" && nextTooltipButton != null) {
+    if (nextTooltipButton != null) {
       nextTooltipButton.focus();
     }
 
