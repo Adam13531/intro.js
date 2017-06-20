@@ -218,7 +218,9 @@
         _previousStep.call(self);
       } else if (e.keyCode === 39) {
         //right arrow
-        _nextStep.call(self);
+        if (!_isOnLastStep.call(self) || _isSkipButtonVisible()) {
+          _nextStep.call(self);
+        }
       } else if (e.keyCode === 13) {
         //srcElement === ie
         var target = e.target || e.srcElement;
@@ -777,6 +779,32 @@
   }
 
   /**
+   * @api private
+   * @method _isOnLastStep
+   * @returns {Boolean} true if you're on the last step
+   */
+  function _isOnLastStep() {
+    return this._currentStep === this._introItems.length - 1;
+  }
+
+  /**
+   * FYI: this function uses getComputedStyle, which is a relatively slow way of
+   * doing things, but it's easy to code and it's cross-platform.
+   * @api private
+   * @method _isSkipButtonVisible
+   * @returns {Boolean} true if the "Skip" button is visible
+   */
+  function _isSkipButtonVisible() {
+    var skipTooltipButton = document.querySelector('.introjs-skipbutton');
+    if (skipTooltipButton == null) {
+        return false;
+    }
+
+    var style = window.getComputedStyle(skipTooltipButton);
+    return (style.display !== 'none');
+  }
+
+  /**
    * Show an element on the page
    *
    * @api private
@@ -1055,7 +1083,7 @@
       if (prevTooltipButton != null) {
         prevTooltipButton.tabIndex = '-1';
       }
-    } else if (this._introItems.length - 1 == this._currentStep || this._introItems.length == 1) {
+    } else if (_isOnLastStep.call(this) || this._introItems.length == 1) {
       // last step of tour
       skipTooltipButton.innerHTML = this._options.doneLabel;
       // adding donebutton class in addition to skipbutton
