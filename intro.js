@@ -201,69 +201,68 @@
     self._introItems = introItems;
 
     //add overlay layer to the page
-    if(_addOverlayLayer.call(self, targetElm)) {
-      //then, start the show
-      _nextStep.call(self);
+    _addOverlayLayer.call(self, targetElm);
+    //then, start the show
+    _nextStep.call(self);
 
-      var skipButton     = targetElm.querySelector('.introjs-skipbutton'),
-          nextStepButton = targetElm.querySelector('.introjs-nextbutton');
+    var skipButton     = targetElm.querySelector('.introjs-skipbutton'),
+        nextStepButton = targetElm.querySelector('.introjs-nextbutton');
 
-      self._onKeyDown = function(e) {
-        if (e.keyCode === 27 && self._options.exitOnEsc == true) {
-          //escape key pressed, exit the intro
-          //check if exit callback is defined
-          _exitIntro.call(self, targetElm);
-        } else if(e.keyCode === 37) {
-          //left arrow
+    self._onKeyDown = function(e) {
+      if (e.keyCode === 27 && self._options.exitOnEsc == true) {
+        //escape key pressed, exit the intro
+        //check if exit callback is defined
+        _exitIntro.call(self, targetElm);
+      } else if(e.keyCode === 37) {
+        //left arrow
+        _previousStep.call(self);
+      } else if (e.keyCode === 39) {
+        //right arrow
+        _nextStep.call(self);
+      } else if (e.keyCode === 13) {
+        //srcElement === ie
+        var target = e.target || e.srcElement;
+        if (target && target.className.indexOf('introjs-prevbutton') > 0) {
+          //user hit enter while focusing on previous button
           _previousStep.call(self);
-        } else if (e.keyCode === 39) {
-          //right arrow
+        } else if (target && target.className.indexOf('introjs-skipbutton') > 0) {
+          //user hit enter while focusing on skip button
+          if (self._introItems.length - 1 == self._currentStep && typeof (self._introCompleteCallback) === 'function') {
+              self._introCompleteCallback.call(self);
+          }
+
+          _exitIntro.call(self, targetElm);
+        } else {
+          //default behavior for responding to enter
           _nextStep.call(self);
-        } else if (e.keyCode === 13) {
-          //srcElement === ie
-          var target = e.target || e.srcElement;
-          if (target && target.className.indexOf('introjs-prevbutton') > 0) {
-            //user hit enter while focusing on previous button
-            _previousStep.call(self);
-          } else if (target && target.className.indexOf('introjs-skipbutton') > 0) {
-            //user hit enter while focusing on skip button
-            if (self._introItems.length - 1 == self._currentStep && typeof (self._introCompleteCallback) === 'function') {
-                self._introCompleteCallback.call(self);
-            }
-
-            _exitIntro.call(self, targetElm);
-          } else {
-            //default behavior for responding to enter
-            _nextStep.call(self);
-          }
-
-          //prevent default behaviour on hitting Enter, to prevent steps being skipped in some browsers
-          if(e.preventDefault) {
-            e.preventDefault();
-          } else {
-            e.returnValue = false;
-          }
         }
-      };
 
-      self._onResize = function(e) {
-        _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
-        _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
-      };
-
-      if (window.addEventListener) {
-        if (this._options.keyboardNavigation) {
-          window.addEventListener('keydown', self._onKeyDown, true);
+        //prevent default behaviour on hitting Enter, to prevent steps being skipped in some browsers
+        if(e.preventDefault) {
+          e.preventDefault();
+        } else {
+          e.returnValue = false;
         }
-        //for window resize
-        window.addEventListener('resize', self._onResize, true);
-      } else if (document.attachEvent) { //IE
-        if (this._options.keyboardNavigation) {
-          document.attachEvent('onkeydown', self._onKeyDown);
-        }
-        //for window resize
-        document.attachEvent('onresize', self._onResize);
       }
+    };
+
+    self._onResize = function(e) {
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+    };
+
+    if (window.addEventListener) {
+      if (this._options.keyboardNavigation) {
+        window.addEventListener('keydown', self._onKeyDown, true);
+      }
+      //for window resize
+      window.addEventListener('resize', self._onResize, true);
+    } else if (document.attachEvent) { //IE
+      if (this._options.keyboardNavigation) {
+        document.attachEvent('onkeydown', self._onKeyDown);
+      }
+      //for window resize
+      document.attachEvent('onresize', self._onResize);
     }
     return false;
   }
@@ -1341,8 +1340,6 @@
       styleText += 'opacity: ' + self._options.overlayOpacity.toString() + ';';
       overlayLayer.setAttribute('style', styleText);
     }, 10);
-
-    return true;
   }
 
   /**
