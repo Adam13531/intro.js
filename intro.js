@@ -212,9 +212,6 @@
     //then, start the show
     _nextStep.call(self);
 
-    var skipButton     = targetElm.querySelector('.introjs-skipbutton'),
-        nextStepButton = targetElm.querySelector('.introjs-nextbutton');
-
     self._onKeyDown = function(e) {
       if (e.keyCode === 27 && self._options.exitOnEsc == true) {
         //escape key pressed, exit the intro
@@ -243,7 +240,9 @@
           _exitIntro.call(self, targetElm);
         } else {
           //default behavior for responding to enter
-          _nextStep.call(self);
+          if (!_isOnLastStep.call(self) || _isSkipButtonVisible.call(self)) {
+              _nextStep.call(self);
+          }
         }
 
         //prevent default behaviour on hitting Enter, to prevent steps being skipped in some browsers
