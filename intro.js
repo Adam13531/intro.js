@@ -225,7 +225,7 @@
         if (!_isOnLastStep.call(self) || _isSkipButtonVisible()) {
           _nextStep.call(self);
         }
-      } else if (e.keyCode === 13) {
+      } else if (e.keyCode === 13 || e.keyCode === 32) {
         //srcElement === ie
         var target = e.target || e.srcElement;
         if (target && target.className.indexOf('introjs-prevbutton') > 0) {
