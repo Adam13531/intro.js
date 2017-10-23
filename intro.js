@@ -614,9 +614,9 @@
     }
 
     if (alignArrowHorizontally) {
-        const tooltipRect = tooltipLayer.getBoundingClientRect();
-        const targetRect = targetElement.getBoundingClientRect();
-        const arrowRect = arrowLayer.getBoundingClientRect();
+        var tooltipRect = tooltipLayer.getBoundingClientRect();
+        var targetRect = targetElement.getBoundingClientRect();
+        var arrowRect = arrowLayer.getBoundingClientRect();
         arrowLayer.style.left = Math.round(targetRect.x - tooltipRect.x + targetRect.width / 2 - arrowRect.width / 2) + 'px';
     }
   }
