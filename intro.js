@@ -470,6 +470,7 @@
    */
   function _placeTooltip(targetElement, tooltipLayer, arrowLayer, helperNumberLayer, hintMode) {
     var tooltipCssClass = '',
+        alignArrowHorizontally = false,
         currentStepObj,
         tooltipOffset,
         targetOffset,
@@ -516,8 +517,6 @@
     targetOffset  = _getOffset(targetElement);
     tooltipOffset = _getOffset(tooltipLayer);
     windowSize    = _getWinSize();
-
-    let alignArrowHorizontally = false;
 
     switch (currentTooltipPosition) {
       case 'top':
