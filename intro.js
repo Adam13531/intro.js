@@ -820,6 +820,29 @@
     return (style.display !== 'none');
   }
 
+  // Checks to see if an element is hidden.
+  function isHidden(elem) {
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
+
+  // If all children have "display: none", then give this element "display:
+  // none". This does NOT work with "visibility: hidden" due to how "isHidden"
+  // works I believe.
+  function hideElementIfChildrenAreNotVisible(ele) {
+    if (ele == null) {
+        return;
+    }
+    var children = ele.children;
+    for (var i = 0; i < children.length; ++i) {
+        var child = children[i];
+        if (!isHidden(child)) {
+            return;
+        }
+    }
+
+    ele.style.display = 'none';
+  }
+
   /**
    * Show an element on the page
    *
@@ -1143,6 +1166,10 @@
     if (nextTooltipButton != null) {
       nextTooltipButton.focus();
     }
+
+    // If all of the buttons ended up being hidden, then hide the entire button
+    // layer so that it doesn't take up space for no reason.
+    hideElementIfChildrenAreNotVisible(buttonsLayer);
 
     _setShowElement(targetElement);
 
