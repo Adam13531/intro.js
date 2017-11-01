@@ -804,9 +804,6 @@
   }
 
   /**
-   * FYI: this function uses getComputedStyle, which is a relatively slow way of
-   * doing things, but it's easy to code and it's cross-platform.
-   * @api private
    * @method _isSkipButtonVisible
    * @returns {Boolean} true if the "Skip" button is visible
    */
@@ -816,17 +813,23 @@
         return false;
     }
 
-    var style = window.getComputedStyle(skipTooltipButton);
-    return (style.display !== 'none');
+    return !isHidden(skipTooltipButton);
   }
 
-  // Checks to see if an element is hidden.
+  /**
+   * FYI: this function uses getComputedStyle, which is a relatively slow way of
+   * doing things, but it's easy to code and it's cross-platform.
+   * @api private
+   * @param  {Object}  elem
+   * @return {Boolean}
+   */
   function isHidden(elem) {
-    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+    var style = window.getComputedStyle(elem);
+    return (style.display === 'none');
   }
 
   // If all children have "display: none", then give this element "display:
-  // none". This does NOT work with "visibility: hidden" due to how "isHidden"
+  // none". This may not work with "visibility: hidden" due to how "isHidden"
   // works I believe.
   function hideElementIfChildrenAreNotVisible(ele) {
     if (ele == null) {
