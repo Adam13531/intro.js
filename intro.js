@@ -971,6 +971,17 @@
 
       arrowLayer.className = 'introjs-arrow';
 
+      // If the options for a custom icon were specified, add that control in
+      // here.
+      var customIconProperties = this._options.customIconProperties;
+      if (customIconProperties != null) {
+        var customIconLayer = document.createElement('div');
+        customIconLayer.className = customIconProperties.cssClass;
+        customIconLayer.innerHTML = customIconProperties.innerHtml;
+        customIconLayer.addEventListener('click', customIconProperties.onClick);
+        tooltipLayer.appendChild(customIconLayer);
+      }
+
       tooltipTextLayer.className = 'introjs-tooltiptext';
       tooltipTextLayer.innerHTML = targetElement.intro;
 
