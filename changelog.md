@@ -1,5 +1,51 @@
 ## Release History
 
+ * **v2.9.3** - 2018-04-24
+   - hotfix to skipping and exiting the intro
+
+ * **v2.9.2** - 2018-04-24
+   - hotfix to add any minified files that might have been dependencies to the npm package
+
+ * **v2.9.1** - 2018-04-24
+   - hotfix to removing events from removed DOM elements
+
+ * **v2.9.0** - 2018-04-23
+   - Added @bozdoz as Author
+   - Fixed scroll positions when parent element is scrollable 
+   - Added DOM Event helper function and _stamp to uniquely identify objects and intro instances; fixes issues with removing event listeners
+   - Added new syntax for radial gradients
+   - Fixes to CSP violations to avoid using `setAttribute`
+   - Fix to intro groups from PR #80 (also PR #763)
+   - optional `buttonClass` option to overwrite 'introjs-button'
+   - Added `onskip` callback
+
+ * **v2.9.0-alpha.1** - 2017-12-02
+   - Supporting scroll option `off`
+   - Improved accuracy of tooltip positions
+   - Improved auto position
+   - Changed HTML attributes to lowercase
+   - Improved coding style
+   - Many bug fixes
+
+ * **v2.8.0-alpha.1** - 2017-08-30
+   - Enabling `onbeforechange` to return bool and prevent the next step to display
+   - Updating disable interaction layer after window resize
+   - Fixing disable interaction layer z-index issue
+
+ * **v2.7.0** - 2017-08-17
+   - Added `onbeforeexit` callback
+   - Added `force` parameter to `exit()`
+   - Added Code of Conduct and Contributing guide files
+
+ * **v2.6.0** - 2017-07-29
+   - Per step disable interaction
+   - Adding `scrollTo` option 
+   - Better scrolling method
+   - Fixing pulse animation issue on IE
+   - Adding a new method to show the popup of specific hint
+   - Fixing build script
+   - Some minor bug fixes
+
  * **v2.5.0** - 2017-03-22
    - SVG support
    - Adding new function: `goToStepNumber`, `removeHint`, `removeHits`
