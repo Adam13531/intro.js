@@ -312,16 +312,17 @@
     this._introItems = introItems;
 
     //add overlay layer to the page
-    if (_addOverlayLayer.call(this, targetElm)) {
-      //then, start the show
-      _nextStep.call(this);
+    _addOverlayLayer.call(this, targetElm);
 
-      if (this._options.keyboardNavigation) {
-        DOMEvent.on(window, 'keydown', _onKeyDown, this, true);
-      }
-      //for window resize
-      DOMEvent.on(window, 'resize', _onResize, this, true);
+    //then, start the show
+    _nextStep.call(this);
+
+    if (this._options.keyboardNavigation) {
+      DOMEvent.on(window, 'keydown', _onKeyDown, this, true);
     }
+    //for window resize
+    DOMEvent.on(window, 'resize', _onResize, this, true);
+
     return false;
   }
 
