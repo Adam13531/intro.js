@@ -1614,20 +1614,21 @@
       skipTooltipButton.className =
         this._options.buttonClass + ' introjs-skipbutton ';
       _setAnchorAsButton(skipTooltipButton);
-      skipTooltipButton.innerHTML = this._options.skipLabel;
 
       skipTooltipButton.onclick = function() {
+        var onLastStep = self._introItems.length - 1 === self._currentStep;
+        var currentTargetElement = self._introItems[self._currentStep];
+        var definedCustomSkipButtonLabel =
+          currentTargetElement.skipButtonLabel != null;
         if (
-          self._introItems.length - 1 === self._currentStep &&
-          typeof self._introCompleteCallback === 'function'
+          onLastStep &&
+          typeof self._introCompleteCallback === 'function' &&
+          !definedCustomSkipButtonLabel
         ) {
           self._introCompleteCallback.call(self);
         }
 
-        if (
-          self._introItems.length - 1 !== self._currentStep &&
-          typeof self._introExitCallback === 'function'
-        ) {
+        if (!onLastStep && typeof self._introExitCallback === 'function') {
           self._introExitCallback.call(self);
         }
 
@@ -1680,12 +1681,17 @@
     var nextTooltipButtonExists = nextTooltipButton != null;
     var prevTooltipButtonExists = prevTooltipButton != null;
 
+    // As long as the skip button exists, set its default label. This can change
+    // between steps.
+    if (skipTooltipButtonExists) {
+      skipTooltipButton.innerHTML = this._options.skipLabel;
+    }
+
     // when it's the first step of tour
     if (this._currentStep === 0 && this._introItems.length > 1) {
       if (skipTooltipButtonExists) {
         skipTooltipButton.className =
           this._options.buttonClass + ' introjs-skipbutton';
-        skipTooltipButton.innerHTML = this._options.skipLabel;
       }
 
       if (nextTooltipButtonExists) {
@@ -1747,7 +1753,6 @@
       if (skipTooltipButtonExists) {
         skipTooltipButton.className =
           this._options.buttonClass + ' introjs-skipbutton';
-        skipTooltipButton.innerHTML = this._options.skipLabel;
       }
     }
 
@@ -1756,6 +1761,10 @@
     }
     if (skipTooltipButtonExists) {
       skipTooltipButton.setAttribute('role', 'button');
+
+      if (targetElement.skipButtonLabel != null) {
+        skipTooltipButton.innerHTML = targetElement.skipButtonLabel;
+      }
     }
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
