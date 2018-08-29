@@ -1754,13 +1754,17 @@
       }
     }
 
-    prevTooltipButton.setAttribute('role', 'button');
-    nextTooltipButton.setAttribute('role', 'button');
-    skipTooltipButton.setAttribute('role', 'button');
+    if (prevTooltipButtonExists) {
+      prevTooltipButton.setAttribute('role', 'button');
+    }
+    if (skipTooltipButtonExists) {
+      skipTooltipButton.setAttribute('role', 'button');
+    }
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
-    if (nextTooltipButton != null) {
+    if (nextTooltipButtonExists) {
       nextTooltipButton.focus();
+      nextTooltipButton.setAttribute('role', 'button');
     }
 
     // If all of the buttons ended up being hidden, then hide the entire button
