@@ -1680,6 +1680,7 @@
     var skipTooltipButtonExists = skipTooltipButton != null;
     var nextTooltipButtonExists = nextTooltipButton != null;
     var prevTooltipButtonExists = prevTooltipButton != null;
+    var hasCustomSkipButtonLabel = targetElement.skipButtonLabel != null;
 
     // As long as the skip button exists, set its default label. This can change
     // between steps.
@@ -1715,7 +1716,7 @@
       }
     } else if (_isOnLastStep.call(this) || this._introItems.length == 1) {
       // last step of tour
-      if (skipTooltipButtonExists) {
+      if (skipTooltipButtonExists && !hasCustomSkipButtonLabel) {
         skipTooltipButton.innerHTML = this._options.doneLabel;
         // adding donebutton class in addition to skipbutton
         _addClass(skipTooltipButton, 'introjs-donebutton');
@@ -1762,7 +1763,7 @@
     if (skipTooltipButtonExists) {
       skipTooltipButton.setAttribute('role', 'button');
 
-      if (targetElement.skipButtonLabel != null) {
+      if (hasCustomSkipButtonLabel) {
         skipTooltipButton.innerHTML = targetElement.skipButtonLabel;
       }
     }
