@@ -368,7 +368,7 @@
       _previousStep.call(this);
     } else if (code === 'ArrowRight' || code === 39) {
       //right arrow
-      if (!_isOnLastStep.call(this) || _isSkipButtonVisible()) {
+      if (!_isOnLastStep.call(this)) {
         _nextStep.call(this);
       }
     } else if (
