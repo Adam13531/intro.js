@@ -71,10 +71,9 @@
       /* exitOnOverlayClick will let you close the introduction whenever you
       click on the overlay regardless of whether you "should" be able to, so
       it's relatively absolute. This option will let you close the introduction
-      by clicking on the overlay only when the "skip" button is present, meaning
-      this is just a convenience feature as opposed to different functionality
+      by clicking on the overlay only when the "skip" button represents "done"
       */
-      exitOnOverlayClickWhenSkipIsPresent: true,
+      preventExitOnOverlayClickUnlessDoneButtonIsPresent: false,
       /* Show step numbers in introduction? */
       showStepNumbers: true,
       /* Let user use keyboard to navigate the tour? */
@@ -2249,10 +2248,17 @@
 
     overlayLayer.onclick = function() {
       if (
-        self._options.exitOnOverlayClick === true ||
-        (self._options.exitOnOverlayClickWhenSkipIsPresent &&
-          _isSkipButtonVisible.call(self))
+        self._options.exitOnOverlayClick === true &&
+        (!self._options.preventExitOnOverlayClickUnlessDoneButtonIsPresent ||
+          _doesSkipButtonRepresentDone.call(self))
       ) {
+        if (
+          _isOnLastStep.call(self) &&
+          typeof self._introCompleteCallback === 'function'
+        ) {
+          self._introCompleteCallback.call(self);
+        }
+
         _exitIntro.call(self, targetElm);
       }
     };
