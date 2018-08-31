@@ -74,6 +74,10 @@
       by clicking on the overlay only when the "skip" button represents "done"
       */
       preventExitOnOverlayClickUnlessDoneButtonIsPresent: false,
+      /* There's an option for each step called "bypassCaching" which will
+      always fetch the element by its selector if one exists. This global option
+      will act like bypassCaching is specified for all steps.*/
+      bypassCachingByDefault: false,
       /* Show step numbers in introduction? */
       showStepNumbers: true,
       /* Let user use keyboard to navigate the tour? */
@@ -138,6 +142,13 @@
 
           //use querySelector function only when developer used CSS selector
           if (typeof currentItem.element === 'string') {
+            if (
+              currentItem.bypassCaching ||
+              this._options.bypassCachingByDefault
+            ) {
+              currentItem._originalClassName = currentItem.element;
+            }
+
             //grab the element with given selector from the page
             currentItem.element = document.querySelector(currentItem.element);
           }
@@ -1337,6 +1348,17 @@
    * @param {Object} targetElement
    */
   function _showElement(targetElement) {
+    if (targetElement.bypassCaching || this._options.bypassCachingByDefault) {
+      targetElement.element = document.querySelector(
+        targetElement._originalClassName
+      );
+      if (targetElement.element == null) {
+        targetElement.element = document.querySelector(
+          '.introjsFloatingElement'
+        );
+      }
+    }
+
     if (typeof this._introChangeCallback !== 'undefined') {
       this._introChangeCallback.call(this, targetElement.element);
     }
