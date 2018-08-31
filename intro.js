@@ -385,7 +385,7 @@
       } else if (target && target.className.match('introjs-skipbutton')) {
         //user hit enter while focusing on skip button
         if (
-          this._introItems.length - 1 === this._currentStep &&
+          _isOnLastStep.call(this) &&
           typeof this._introCompleteCallback === 'function'
         ) {
           this._introCompleteCallback.call(this);
@@ -491,7 +491,7 @@
       ++this._currentStep;
     }
 
-    var nextStep = this._introItems[this._currentStep];
+    var nextStep = _getCurrentIntroElement.call(this);
     var continueStep = true;
 
     if (typeof this._introBeforeChangeCallback !== 'undefined') {
@@ -535,7 +535,7 @@
 
     --this._currentStep;
 
-    var nextStep = this._introItems[this._currentStep];
+    var nextStep = _getCurrentIntroElement.call(this);
     var continueStep = true;
 
     if (typeof this._introBeforeChangeCallback !== 'undefined') {
@@ -582,7 +582,7 @@
         oldtooltipContainer = document.querySelector('.introjs-tooltip');
       _placeTooltip.call(
         this,
-        this._introItems[this._currentStep].element,
+        _getCurrentIntroElement.call(this).element,
         oldtooltipContainer,
         oldArrowLayer,
         oldHelperNumberLayer
@@ -730,7 +730,7 @@
       helperNumberLayer.style.left = null;
     }
 
-    var currentIntroItem = this._introItems[this._currentStep];
+    var currentIntroItem = _getCurrentIntroElement.call(this);
     //prevent error when `this._currentStep` is undefined
     if (!currentIntroItem) return;
 
@@ -1183,11 +1183,11 @@
    */
   function _setHelperLayerPosition(helperLayer) {
     if (helperLayer) {
+      var currentElement = _getCurrentIntroElement.call(this);
       //prevent error when `this._currentStep` in undefined
-      if (!this._introItems[this._currentStep]) return;
+      if (!currentElement) return;
 
-      var currentElement = this._introItems[this._currentStep],
-        elementPosition = _getOffset(currentElement.element),
+      var elementPosition = _getOffset(currentElement.element),
         widthHeightPadding = this._options.helperElementPadding;
 
       // If the target element is fixed, the tooltip should be fixed as well.
@@ -1249,6 +1249,15 @@
   function _setAnchorAsButton(anchor) {
     anchor.setAttribute('role', 'button');
     anchor.tabIndex = 0;
+  }
+
+  /**
+   * @api private
+   * @method  _getCurrentIntroElement
+   * @return {?Object}
+   */
+  function _getCurrentIntroElement() {
+    return this._introItems[this._currentStep];
   }
 
   /**
@@ -1589,7 +1598,7 @@
       nextTooltipButton = document.createElement('a');
 
       nextTooltipButton.onclick = function() {
-        if (self._introItems.length - 1 !== self._currentStep) {
+        if (!_isOnLastStep.call(self)) {
           _nextStep.call(self);
         }
       };
@@ -1616,7 +1625,7 @@
       _setAnchorAsButton(skipTooltipButton);
 
       skipTooltipButton.onclick = function() {
-        var onLastStep = self._introItems.length - 1 === self._currentStep;
+        var onLastStep = _isOnLastStep.call(self);
         var currentTargetElement = self._introItems[self._currentStep];
         var definedCustomSkipButtonLabel =
           currentTargetElement.skipButtonLabel != null;
