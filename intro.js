@@ -397,7 +397,11 @@
         target.click();
       } else {
         //default behavior for responding to enter
-        if (!_isOnLastStep.call(this) || _isSkipButtonVisible.call(this)) {
+        var currentIntroItem = _getCurrentIntroElement.call(this);
+        if (
+          !_isOnLastStep.call(this) ||
+          !currentIntroItem.preventTreatingSkipAsDone
+        ) {
           _nextStep.call(this);
         }
       }
@@ -1270,6 +1274,22 @@
   }
 
   /**
+   * @api private
+   * @method  _doesSkipButtonRepresentDone
+   * @return {Boolean} true if the "Skip" button should have "Done"
+   * functionality; the button is reused for both, and there are cases when it
+   * should skip, and cases when it should complete the set of steps.
+   */
+  function _doesSkipButtonRepresentDone() {
+    var currentTargetElement = _getCurrentIntroElement.call(this);
+
+    return (
+      _isOnLastStep.call(this) &&
+      !currentTargetElement.preventTreatingSkipAsDone
+    );
+  }
+
+  /**
    * @method _isSkipButtonVisible
    * @returns {Boolean} true if the "Skip" button is visible
    */
@@ -1627,12 +1647,10 @@
       skipTooltipButton.onclick = function() {
         var onLastStep = _isOnLastStep.call(self);
         var currentTargetElement = self._introItems[self._currentStep];
-        var definedCustomSkipButtonLabel =
-          currentTargetElement.skipButtonLabel != null;
         if (
           onLastStep &&
           typeof self._introCompleteCallback === 'function' &&
-          !definedCustomSkipButtonLabel
+          !currentTargetElement.preventTreatingSkipAsDone
         ) {
           self._introCompleteCallback.call(self);
         }
@@ -1689,7 +1707,6 @@
     var skipTooltipButtonExists = skipTooltipButton != null;
     var nextTooltipButtonExists = nextTooltipButton != null;
     var prevTooltipButtonExists = prevTooltipButton != null;
-    var hasCustomSkipButtonLabel = targetElement.skipButtonLabel != null;
 
     // As long as the skip button exists, set its default label. This can change
     // between steps.
@@ -1725,7 +1742,7 @@
       }
     } else if (_isOnLastStep.call(this) || this._introItems.length == 1) {
       // last step of tour
-      if (skipTooltipButtonExists && !hasCustomSkipButtonLabel) {
+      if (skipTooltipButtonExists && !targetElement.preventTreatingSkipAsDone) {
         skipTooltipButton.innerHTML = this._options.doneLabel;
         // adding donebutton class in addition to skipbutton
         _addClass(skipTooltipButton, 'introjs-donebutton');
@@ -1771,10 +1788,6 @@
     }
     if (skipTooltipButtonExists) {
       skipTooltipButton.setAttribute('role', 'button');
-
-      if (hasCustomSkipButtonLabel) {
-        skipTooltipButton.innerHTML = targetElement.skipButtonLabel;
-      }
     }
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
