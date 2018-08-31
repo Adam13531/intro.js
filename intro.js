@@ -499,10 +499,8 @@
     var continueStep = true;
 
     if (typeof this._introBeforeChangeCallback !== 'undefined') {
-      continueStep = this._introBeforeChangeCallback.call(
-        this,
-        nextStep.element
-      );
+      var nextElement = nextStep != null ? nextStep.element : null;
+      continueStep = this._introBeforeChangeCallback.call(this, nextElement);
     }
 
     // if `onbeforechange` returned `false`, stop displaying the element
