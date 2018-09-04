@@ -603,6 +603,14 @@
       );
     }
 
+    var currentIntroItem = _getCurrentIntroElement.call(this);
+    if (
+      currentIntroItem != null &&
+      currentIntroItem.scrollParentOnBrowserResize
+    ) {
+      _scrollParentToElement(currentIntroItem.element);
+    }
+
     //re-align hints
     _reAlignHints.call(this);
     return this;
@@ -1390,8 +1398,7 @@
       highlightClass = 'introjs-helperLayer',
       nextTooltipButton,
       prevTooltipButton,
-      skipTooltipButton,
-      scrollParent;
+      skipTooltipButton;
 
     //check for a current step highlight class
     if (typeof targetElement.highlightClass === 'string') {
@@ -1446,13 +1453,8 @@
         }
       }
 
-      // scroll to element
-      scrollParent = _getScrollParent(targetElement.element);
-
-      if (scrollParent !== document.body) {
-        // target is within a scrollable element
-        _scrollParentToElement(scrollParent, targetElement.element);
-      }
+      // If the target is within a scrollable element, scroll to it
+      _scrollParentToElement(targetElement.element);
 
       // set new position to helper layer
       _setHelperLayerPosition.call(self, oldHelperLayer);
@@ -1548,13 +1550,8 @@
       helperLayer.className = highlightClass;
       referenceLayer.className = 'introjs-tooltipReferenceLayer';
 
-      // scroll to element
-      scrollParent = _getScrollParent(targetElement.element);
-
-      if (scrollParent !== document.body) {
-        // target is within a scrollable element
-        _scrollParentToElement(scrollParent, targetElement.element);
-      }
+      // If the target is within a scrollable element, scroll to it
+      _scrollParentToElement(targetElement.element);
 
       //set new position to helper layer
       _setHelperLayerPosition.call(self, helperLayer);
@@ -2841,12 +2838,15 @@
   /**
    * scroll a scrollable element to a child element
    *
-   * @param Element parent
    * @param Element element
    * @return Null
    */
-  function _scrollParentToElement(parent, element) {
-    parent.scrollTop = element.offsetTop - parent.offsetTop;
+  function _scrollParentToElement(element) {
+    var scrollParent = _getScrollParent(element);
+
+    if (scrollParent !== document.body) {
+      scrollParent.scrollTop = element.offsetTop - scrollParent.offsetTop;
+    }
   }
 
   /**
