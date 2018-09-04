@@ -76,7 +76,9 @@
       preventExitOnOverlayClickUnlessDoneButtonIsPresent: false,
       /* There's an option for each step called "bypassCaching" which will
       always fetch the element by its selector if one exists. This global option
-      will act like bypassCaching is specified for all steps.*/
+      will act like bypassCaching is specified for all steps. This is useful when
+      combining IntroJS with libraries like React that are going to keep generating
+      new DOM elements; when that happens, we can't rely on cached elements.*/
       bypassCachingByDefault: false,
       /* Show step numbers in introduction? */
       showStepNumbers: true,
@@ -1199,6 +1201,8 @@
       //prevent error when `this._currentStep` in undefined
       if (!currentElement) return;
 
+      _potentiallyRefetchElement.call(this, currentElement);
+
       var elementPosition = _getOffset(currentElement.element),
         widthHeightPadding = this._options.helperElementPadding;
 
@@ -1340,15 +1344,13 @@
     ele.style.display = 'none';
   }
 
-  /**
-   * Show an element on the page
-   *
-   * @api private
-   * @method _showElement
-   * @param {Object} targetElement
-   */
-  function _showElement(targetElement) {
+  function _potentiallyRefetchElement(targetElement) {
+    if (targetElement == null) {
+      return;
+    }
+
     if (targetElement.bypassCaching || this._options.bypassCachingByDefault) {
+      var originalElement = targetElement.element;
       targetElement.element = document.querySelector(
         targetElement._originalClassName
       );
@@ -1357,7 +1359,24 @@
           '.introjsFloatingElement'
         );
       }
+
+      // If there's a new element, add the correct class to it.
+      var elementsChanged = originalElement !== targetElement.element;
+      if (elementsChanged) {
+        _addClass(targetElement.element, 'introjs-showElement');
+      }
     }
+  }
+
+  /**
+   * Show an element on the page
+   *
+   * @api private
+   * @method _showElement
+   * @param {Object} targetElement
+   */
+  function _showElement(targetElement) {
+    _potentiallyRefetchElement.call(this, targetElement);
 
     if (typeof this._introChangeCallback !== 'undefined') {
       this._introChangeCallback.call(this, targetElement.element);
