@@ -1693,10 +1693,12 @@
       skipTooltipButton.onclick = function() {
         var onLastStep = _isOnLastStep.call(self);
         var currentTargetElement = self._introItems[self._currentStep];
+        var shouldCallDoneCallback =
+          onLastStep && !currentTargetElement.preventTreatingSkipAsDone;
+
         if (
-          onLastStep &&
-          typeof self._introCompleteCallback === 'function' &&
-          !currentTargetElement.preventTreatingSkipAsDone
+          shouldCallDoneCallback &&
+          typeof self._introCompleteCallback === 'function'
         ) {
           self._introCompleteCallback.call(self);
         }
@@ -1705,7 +1707,10 @@
           self._introExitCallback.call(self);
         }
 
-        if (typeof self._introSkipCallback === 'function') {
+        if (
+          !shouldCallDoneCallback &&
+          typeof self._introSkipCallback === 'function'
+        ) {
           self._introSkipCallback.call(self);
         }
 
