@@ -696,7 +696,7 @@
       floatingElement.parentNode.removeChild(floatingElement);
     }
 
-    removeShowElement.call(this);
+    _removeShowElement.call(this);
 
     //remove `introjs-fixParent` class from the elements
     var fixParents = document.querySelectorAll('.introjs-fixParent');
@@ -1478,7 +1478,7 @@
       });
 
       //remove old classes if the element still exist
-      removeShowElement.call(this);
+      _removeShowElement.call(this);
 
       //we should wait until the CSS3 transition is competed (it's 0.3 sec) to prevent incorrect `height` and `width` calculation
       if (self._lastShowElementTimer) {
@@ -1846,7 +1846,7 @@
     // layer so that it doesn't take up space for no reason.
     hideElementIfChildrenAreNotVisible(buttonsLayer);
 
-    setShowElement.call(this, targetElement);
+    _setShowElement.call(this, targetElement);
 
     if (typeof this._introAfterChangeCallback !== 'undefined') {
       this._introAfterChangeCallback.call(this, targetElement.element);
