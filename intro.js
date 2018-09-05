@@ -80,6 +80,14 @@
       combining IntroJS with libraries like React that are going to keep generating
       new DOM elements; when that happens, we can't rely on cached elements.*/
       bypassCachingByDefault: false,
+      /*
+        When using IntroJS with React, IntroJS may add showElement to an element
+        only for React to later wipe out all of the classes on that element. In
+        those cases, we want to observe for changes to the "class" attribute,
+        and when found, re-add introjs-showElement. This property is very similar
+        to bypassCachingByDefault.
+       */
+      observeClassMutations: false,
       /* Show step numbers in introduction? */
       showStepNumbers: true,
       /* Let user use keyboard to navigate the tour? */
@@ -117,6 +125,9 @@
       /* additional classes to put on the buttons */
       buttonClass: 'introjs-button',
     };
+
+    // This is controlled by the observeClassMutations property.
+    this.mutationObserver = null;
   }
 
   /**
@@ -685,7 +696,7 @@
       floatingElement.parentNode.removeChild(floatingElement);
     }
 
-    _removeShowElement();
+    removeShowElement.call(this);
 
     //remove `introjs-fixParent` class from the elements
     var fixParents = document.querySelectorAll('.introjs-fixParent');
@@ -1467,7 +1478,7 @@
       });
 
       //remove old classes if the element still exist
-      _removeShowElement();
+      removeShowElement.call(this);
 
       //we should wait until the CSS3 transition is competed (it's 0.3 sec) to prevent incorrect `height` and `width` calculation
       if (self._lastShowElementTimer) {
@@ -1835,7 +1846,7 @@
     // layer so that it doesn't take up space for no reason.
     hideElementIfChildrenAreNotVisible(buttonsLayer);
 
-    _setShowElement(targetElement);
+    setShowElement.call(this, targetElement);
 
     if (typeof this._introAfterChangeCallback !== 'undefined') {
       this._introAfterChangeCallback.call(this, targetElement.element);
@@ -1899,10 +1910,63 @@
    */
   function _removeShowElement() {
     var elms = document.querySelectorAll('.introjs-showElement');
-
+    if (this.mutationObserver != null) {
+      this.mutationObserver.disconnect();
+    }
     _forEach(elms, function(elm) {
       _removeClass(elm, /introjs-[a-zA-Z]+/g);
     });
+  }
+
+  /**
+   * This will ensure that the mutation observer exists with the right
+   * callback and is set up on the element provided.
+   *
+   * See observeClassMutations for an explanation of WHY this exists.
+   * @api private
+   * @method _setupMutationObserver
+   */
+  function _setupMutationObserver(element) {
+    if (!this._options.observeClassMutations) {
+      return;
+    }
+    if (this.mutationObserver == null) {
+      this.mutationObserver = new MutationObserver((mutationsList) => {
+        // Don't know if this is even possible
+        if (mutationsList.length === 0) {
+          return;
+        }
+
+        // Always pull the element from the mutations so that we don't
+        // accidentally capture the element specified in the parent function and
+        // we don't have to bind.
+        var element = mutationsList[0].target;
+
+        // Don't bother checking anything after if we already have the class that
+        // we want to add.
+        if (element.classList.contains('introjs-showElement')) {
+          return;
+        }
+
+        var hadClassMutation = false;
+        for (var i = 0; i < mutationsList.length; ++i) {
+          var mutation = mutationsList[i];
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'class'
+          ) {
+            hadClassMutation = true;
+            break;
+          }
+        }
+
+        if (hadClassMutation) {
+          _addClass(element, 'introjs-showElement');
+        }
+      });
+    }
+
+    this.mutationObserver.observe(element, { attributes: true });
   }
 
   /**
@@ -1933,6 +1997,8 @@
     }
 
     _addClass(targetElement.element, 'introjs-showElement');
+
+    _setupMutationObserver.call(this, targetElement.element);
 
     var currentElementPosition = _getPropValue(
       targetElement.element,
