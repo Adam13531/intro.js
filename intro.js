@@ -81,6 +81,12 @@
       new DOM elements; when that happens, we can't rely on cached elements.*/
       bypassCachingByDefault: false,
       /*
+       If defined, then pressing the "Skip" button will call this function first
+       with a callback as the only parameter. The callback should be called if
+       skipping was successful.
+       */
+      confirmSkipFn: null,
+      /*
         When using IntroJS with React, IntroJS may add showElement to an element
         only for React to later wipe out all of the classes on that element. In
         those cases, we want to observe for changes to the "class" attribute,
@@ -1701,20 +1707,30 @@
           typeof self._introCompleteCallback === 'function'
         ) {
           self._introCompleteCallback.call(self);
+          _exitIntro.call(self, self._targetElement);
         }
 
         if (!onLastStep && typeof self._introExitCallback === 'function') {
           self._introExitCallback.call(self);
         }
 
-        if (
-          !shouldCallDoneCallback &&
-          typeof self._introSkipCallback === 'function'
-        ) {
-          self._introSkipCallback.call(self);
-        }
+        var skipCallback = function() {
+          if (typeof self._introSkipCallback === 'function') {
+            self._introSkipCallback.call(self);
+          }
 
-        _exitIntro.call(self, self._targetElement);
+          _exitIntro.call(self, self._targetElement);
+        };
+
+        var confirmSkipFn = self._options.confirmSkipFn;
+
+        if (!shouldCallDoneCallback) {
+          if (typeof confirmSkipFn === 'function') {
+            confirmSkipFn(skipCallback);
+          } else {
+            skipCallback();
+          }
+        }
       };
 
       buttonsLayer.appendChild(skipTooltipButton);
