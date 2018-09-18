@@ -597,7 +597,8 @@
     );
     _setHelperLayerPosition.call(
       this,
-      document.querySelector('.introjs-tooltipReferenceLayer')
+      document.querySelector('.introjs-tooltipReferenceLayer'),
+      true
     );
     _setHelperLayerPosition.call(
       this,
@@ -1225,7 +1226,7 @@
    * @method _setHelperLayerPosition
    * @param {Object} helperLayer
    */
-  function _setHelperLayerPosition(helperLayer) {
+  function _setHelperLayerPosition(helperLayer, constrainToWindow) {
     if (helperLayer) {
       var currentElement = _getCurrentIntroElement.call(this);
       //prevent error when `this._currentStep` in undefined
@@ -1249,19 +1250,30 @@
         widthHeightPadding = 0;
       }
 
+      var halfPadding = widthHeightPadding / 2;
+      var width = elementPosition.width + widthHeightPadding;
+      var height = elementPosition.height + widthHeightPadding;
+      var top = elementPosition.top - halfPadding;
+      var left = elementPosition.left - halfPadding;
+
+      if (constrainToWindow) {
+        top = Math.max(halfPadding, top);
+        left = Math.max(halfPadding, left);
+      }
+
       //set new position to helper layer
       helperLayer.style.cssText =
         'width: ' +
-        (elementPosition.width + widthHeightPadding) +
+        width +
         'px; ' +
         'height:' +
-        (elementPosition.height + widthHeightPadding) +
+        height +
         'px; ' +
         'top:' +
-        (elementPosition.top - widthHeightPadding / 2) +
+        top +
         'px;' +
         'left: ' +
-        (elementPosition.left - widthHeightPadding / 2) +
+        left +
         'px;';
     }
   }
@@ -1480,7 +1492,7 @@
 
       // set new position to helper layer
       _setHelperLayerPosition.call(self, oldHelperLayer);
-      _setHelperLayerPosition.call(self, oldReferenceLayer);
+      _setHelperLayerPosition.call(self, oldReferenceLayer, true);
 
       //remove `introjs-fixParent` class from the elements
       var fixParents = document.querySelectorAll('.introjs-fixParent');
@@ -1577,7 +1589,7 @@
 
       //set new position to helper layer
       _setHelperLayerPosition.call(self, helperLayer);
-      _setHelperLayerPosition.call(self, referenceLayer);
+      _setHelperLayerPosition.call(self, referenceLayer, true);
 
       //add helper layer to target element
       this._targetElement.appendChild(helperLayer);
@@ -2867,7 +2879,7 @@
       'data-step',
       hintElement.getAttribute('data-step')
     );
-    _setHelperLayerPosition.call(this, referenceLayer);
+    _setHelperLayerPosition.call(this, referenceLayer, true);
 
     referenceLayer.appendChild(tooltipLayer);
     document.body.appendChild(referenceLayer);
