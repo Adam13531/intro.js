@@ -806,6 +806,9 @@
 
     _addClass(tooltipLayer, 'introjs-' + currentTooltipPosition);
 
+    tooltipLayer.style.left = 'initial';
+    tooltipLayer.style.right = 'initial';
+
     switch (currentTooltipPosition) {
       case 'top-right-aligned':
         arrowLayer.className = 'introjs-arrow bottom-right';
@@ -992,6 +995,8 @@
             targetRect.width / 2 -
             arrowRect.width / 2
         ) + 'px';
+    } else {
+      arrowLayer.style.left = 'initial';
     }
   }
 
