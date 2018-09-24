@@ -997,6 +997,9 @@
             arrowRect.width / 2
         ) + 'px';
     } else {
+      // This is needed when forcing IntroJS to show an arrow in one direction
+      // for Step X and then make it show in a different direction. For example,
+      // I use this for my mobile/desktop transitions in Bot Land.
       arrowLayer.style.left = 'initial';
     }
   }
