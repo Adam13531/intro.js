@@ -80,6 +80,12 @@
       combining IntroJS with libraries like React that are going to keep generating
       new DOM elements; when that happens, we can't rely on cached elements.*/
       bypassCachingByDefault: false,
+
+      /* If true, this will have the skip/done button be on the left when it
+      shows "Skip" and on the right when it shows "Done". Also, when on the
+      right, the "Next" button will be hidden. */
+      showDoneButtonOnRight: false,
+
       /*
        If defined, then pressing the "Skip" button will call this function first
        with a callback as the only parameter. The callback should be called if
@@ -1875,6 +1881,27 @@
     }
     if (skipTooltipButtonExists) {
       skipTooltipButton.setAttribute('role', 'button');
+
+      // It's possible that buttonsLayer doesn't exist at this point because
+      // it's only set when CREATING it, not when updating.
+      buttonsLayer = document.querySelector('.introjs-tooltipbuttons');
+      if (
+        this._options.showDoneButtonOnRight &&
+        _doesSkipButtonRepresentDone.call(this)
+      ) {
+        buttonsLayer.appendChild(skipTooltipButton);
+
+        // Also, if the next button is showing, hide it entirely.
+        if (nextTooltipButtonExists) {
+          _addClass(nextTooltipButton, 'introjs-hidden');
+        }
+      } else {
+        buttonsLayer.insertBefore(skipTooltipButton, buttonsLayer.children[0]);
+
+        if (nextTooltipButtonExists) {
+          _removeClass(nextTooltipButton, 'introjs-hidden');
+        }
+      }
     }
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
