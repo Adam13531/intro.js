@@ -882,10 +882,14 @@
         tooltipLayer.style.left = targetOffset.width + 20 + 'px';
         if (targetOffset.top + tooltipOffset.height > windowSize.height) {
           // In this case, right would have fallen below the bottom of the screen.
-          // Modify so that the bottom of the tooltip connects with the target
+          // Modify so that the bottom of the tooltip is at the bottom of the screen.
           arrowLayer.className = 'introjs-arrow left-bottom';
           tooltipLayer.style.top =
-            '-' + (tooltipOffset.height - targetOffset.height - 20) + 'px';
+            '-' +
+            (targetOffset.top -
+              (windowSize.height - tooltipOffset.height) -
+              this._options.helperElementPadding / 2) +
+            'px';
         } else {
           arrowLayer.className = 'introjs-arrow left';
         }
