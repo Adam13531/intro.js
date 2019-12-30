@@ -56,6 +56,8 @@
       doneLabel: 'Done',
       /* Hide previous button in the first step? Otherwise, it will be disabled button. */
       hidePrev: false,
+      /* Hide previous button in all steps unless overridden on a per-step basis. */
+      alwaysHideBackButton: false,
       /* Hide next button in the last step? Otherwise, it will be disabled button. */
       hideNext: false,
       /* Default tooltip box position */
@@ -792,6 +794,17 @@
       /^\s+|\s+$/g,
       ''
     );
+    
+    // Now that we've added the tooltip's CSS class, there's a Bot-Land-specific
+    // case where we may want the children to show, so we may have to unhide the
+    // children. The reason we can't do this in the "correct" place is because
+    // of how placeTooltip is called from a setTimeout.
+    const buttonsLayer = document.querySelector(".introjs-tooltipbuttons");
+    if (buttonsLayer) {
+      buttonsLayer.style.display = 'block';
+      hideElementIfChildrenAreNotVisible(buttonsLayer);
+    }
+
     tooltipLayer.setAttribute('role', 'dialog');
 
     currentTooltipPosition = currentIntroItem.position;
@@ -996,9 +1009,9 @@
     }
 
     if (alignArrowHorizontally) {
-      var tooltipRect = tooltipLayer.getBoundingClientRect();
-      var targetRect = targetElement.getBoundingClientRect();
-      var arrowRect = arrowLayer.getBoundingClientRect();
+      const tooltipRect = tooltipLayer.getBoundingClientRect();
+      const targetRect = targetElement.getBoundingClientRect();
+      const arrowRect = arrowLayer.getBoundingClientRect();
       arrowLayer.style.left =
         Math.round(
           targetRect.x -
@@ -1011,6 +1024,16 @@
       // for Step X and then make it show in a different direction. For example,
       // I use this for my mobile/desktop transitions in Bot Land.
       arrowLayer.style.left = 'initial';
+    }
+    
+    const alignArrowVertically = currentTooltipPosition === 'left' || currentTooltipPosition === 'right';
+    if (alignArrowVertically) {
+      const tooltipRect = tooltipLayer.getBoundingClientRect();
+      const arrowRect = arrowLayer.getBoundingClientRect();
+      arrowLayer.style.top =
+        Math.round(
+            tooltipRect.height / 2 - arrowRect.height / 2
+        ) + "px";
     }
   }
 
@@ -1823,14 +1846,14 @@
           this._options.buttonClass + ' introjs-nextbutton';
       }
 
-      if (this._options.hidePrev === true) {
+      if (this._options.hidePrev === true || this._options.alwaysHideBackButton) {
         if (prevTooltipButtonExists) {
           prevTooltipButton.className =
             this._options.buttonClass + ' introjs-prevbutton introjs-hidden';
         }
-        if (nextTooltipButtonExists) {
-          _addClass(nextTooltipButton, 'introjs-fullbutton');
-        }
+        // if (nextTooltipButtonExists) {
+        //   _addClass(nextTooltipButton, 'introjs-fullbutton');
+        // }
       } else {
         if (prevTooltipButtonExists) {
           prevTooltipButton.className =
@@ -1902,9 +1925,16 @@
       } else {
         buttonsLayer.insertBefore(skipTooltipButton, buttonsLayer.children[0]);
 
-        if (nextTooltipButtonExists) {
-          _removeClass(nextTooltipButton, 'introjs-hidden');
-        }
+        // if (nextTooltipButtonExists) {
+        //   _removeClass(nextTooltipButton, 'introjs-hidden');
+        // }
+      }
+    }
+    
+    if (this._options.alwaysHideBackButton === true) {
+      if (prevTooltipButtonExists) {
+        prevTooltipButton.className =
+          this._options.buttonClass + " introjs-prevbutton introjs-hidden";
       }
     }
 
